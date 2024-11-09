@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
     const existedUser = await UserModel.findOne({ email });
 
     if (existedUser) {
-      return res.status(422).json({ msg: "User already exists" });
+      return res.status(422).json({ status: 422, msg: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,12 +23,14 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
 
-    res
-      .status(200)
-      .json({ msg: "User created successfully", metadata: { user: newUser } });
+    res.status(200).json({
+      status: 200,
+      msg: "User created successfully",
+      metadata: { user: newUser },
+    });
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ msg: "Server error", error });
+    res.status(500).json({ status: 500, msg: "Server error", error });
   }
 };
 
@@ -39,13 +41,13 @@ exports.login = async (req, res) => {
     const foundUser = await UserModel.findOne({ email });
 
     if (!foundUser) {
-      return res.status(401).json({ msg: "Invalid email" });
+      return res.status(401).json({ status: 401, msg: "Invalid email" });
     }
 
     const passwordMatch = await bcrypt.compare(password, foundUser.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ msg: "Invalid password" });
+      return res.status(401).json({ status: 401, msg: "Invalid password" });
     }
 
     const token = jwt.sign(
@@ -54,12 +56,14 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res
-      .status(200)
-      .json({ msg: "Login successful", metadata: { access_token: token } });
+    res.status(200).json({
+      status: 200,
+      msg: "Login successful",
+      metadata: { access_token: token },
+    });
   } catch (error) {
     console.error("Error logging in:", error);
-    res.status(500).json({ msg: "Internal server error" });
+    res.status(500).json({ status: 500, msg: "Internal server error" });
   }
 };
 
@@ -68,10 +72,12 @@ exports.getMe = async (req, res) => {
     const user = await UserModel.findById(req.user.id);
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    res
-      .status(200)
-      .json({ msg: "User data retrieved", metadata: { user: user } });
+    res.status(200).json({
+      status: 200,
+      msg: "User data retrieved",
+      metadata: { user: user },
+    });
   } catch (error) {
-    res.status(500).json({ msg: "Internal server error" });
+    res.status(500).json({ status: 500, msg: "Internal server error" });
   }
 };

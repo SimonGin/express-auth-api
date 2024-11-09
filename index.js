@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const { authenticateToken } = require("./jwt");
@@ -7,6 +8,15 @@ const controller = require("./ctrler");
 const app = express();
 
 dotenv.config();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 2311;
